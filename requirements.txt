@@ -1,0 +1,8 @@
+Cython==0.23.4
+gevent==1.0.2
+greenlet==0.4.9
+grequests==0.2.0
+progressbar==2.3
+requests==2.8.1
+wget==3.2
+wheel==0.24.0
