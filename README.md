@@ -1,4 +1,5 @@
-# Apekit
+![apekit logo](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/apekitLogo.png)
+
 
 Description
 -----------
