@@ -1,4 +1,4 @@
-![apekit logo](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/apekitLogo.png)
+![apekit logo](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/apekitLogoDes2.png)
 
 
 Description
