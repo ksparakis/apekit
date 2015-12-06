@@ -1,18 +1,18 @@
 ![apekit logo](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/apekitLogoDes2.png)
 
 
-![banana bullet]()Description
+![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png)Description
 -----------
 Android app vulnerability analysis toolkit.
 
-Modules
+![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png)Modules
 -------
 * **orangutan** - Does the heavy lifting. Finds and fetches APKs collected by the Playdrone project and hosted on Archive.org.
 * **bonobo** - TBA
 * **chimp** - TBA
 * **gorilla** - TBA
 
-Authors
+![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png)Authors
 -------
 | Name | Email |
 | ---- | ----- |
@@ -26,7 +26,7 @@ Authors
 EC521 Cyber Security
 December 2015
 
-Copyright and License
+![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png)Copyright and License
 ---------------------
 Copyright 2015. Code released under the [Apache 2.0](./LICENSE) license.
 
