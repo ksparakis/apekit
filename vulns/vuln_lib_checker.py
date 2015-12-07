@@ -19,7 +19,7 @@ class CVE:
 
 		return False
 
-class chimp:
+class VulnLibChecker:
 	l = list();
 	
 	def __init__(self):
@@ -44,15 +44,14 @@ class chimp:
 					t = CVE()
 					continue
 				else:
-					t.key_search.append(line[:-1])
-				
+					t.key_search.append(line[:-1])		
 				
 		f.close()
 				
 		
 	
 	def add2list(self, obj):
-#		You can use this call to add more vulnerabilitie to chimp's list 
+#		You can use this call to add more vulnerabilitie to VulnLibChecker's list 
 		self.l.append(obj);
 		
 	def s_keys(self):
@@ -68,13 +67,18 @@ class chimp:
 			print "" 
 
 	def vulnCheck(self, str):
-#		This function will look through all the vulnerabilities in chimp and 
+#		This function will look through all the vulnerabilities in VulnLibChecker and 
 #		see if the given string coulld represent any potential vulnerability. 
 #		It returns a list of CVE numbers.
-		report = ""
+		report = []
 		for ii in range(0,len(self.l)):
 			bool = self.l[ii].match(str)
 			if bool:
-				report += self.l[ii].id + "\n"
-		
-		return report;
+				report.append(int(self.l[ii].id))
+		return report
+
+
+if __name__ == "__main__":
+	vln = VulnLibChecker()
+	print vln.vulnCheck("com.android.mms.transaction.MESSAGE_SENT .processMessage")
+	print vln.vulnCheck("")

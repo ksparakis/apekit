@@ -32,6 +32,7 @@ class Pipeline(object):
 
     def __init__(self):
         self.counter = 0
+        self.vln = VulnLibChecker()
 
     def run(self):
         """
@@ -54,18 +55,25 @@ class Pipeline(object):
                 continue
             files = self.get_java_files_in_dir(dir_name)
             for path_to_file in files:
-                self.analyze_file_for_vulns(path_to_file)
+                self.analyze_file_for_vulns(app, path_to_file)
             print "Finished analyzing app " + app.app_id + "for vulns"
 
 
     @staticmethod
-    def analyze_file_for_vulns(path_to_file):
+    def analyze_file_for_vulns(app, path_to_file):
+        mi = ModelInterface.get_instance()
         with open(path_to_file) as f:
+            line_counter = 1
             for line in f:
                 line = line.rstrip()
                 # Call the vulnerability analysis modules here.
                 if len(line) > 0:
-                    pass
+                    # Check for potentially vulnerable library.
+                    ids = vln.vulnCheck(line)
+                    for vuln_id in ids:
+                        mi.add_vulnerability_for_app(
+                            app, vuln_id, path_to_file, line_counter, line)
+                line_counter += 1
 
     @staticmethod
     def get_java_files_in_dir(directory):
