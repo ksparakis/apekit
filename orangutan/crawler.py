@@ -23,7 +23,7 @@ import requests
 import os
 from progressbar import ProgressBar
 from urllib import urlopen
-from model_interface import ModelInterface
+from backend.model_interface import ModelInterface
 
 
 class _DownloadError(Exception):
@@ -137,7 +137,7 @@ class ArchiveCrawler(object):
         
         for apk in self.apks:
             app_id = apk['app_id']
-            meta_url = apk['meta_url']
+            meta_url = apk['metadata_url']
             
             meta = requests.get(meta_url).json()
             permissions = meta['details']['permission']
