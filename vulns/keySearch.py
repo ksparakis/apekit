@@ -22,7 +22,7 @@ def ressemblesKey(inputString):
 	numberCount	 = numberCount(extract)
 	unique_upperCase = uniqueUpperCaseCount(extract)
 	unique_lowerCase = uniqueLowerCaseCount(extract)
-	if unique_letters > 5 || numberCount = len(extract) || unique_upperCase = len(extract) || 
+	if unique_letters > 5 || numberCount = len(extract) || unique_upperCase = len(extract) || (unique_letters > 2 && symbolCount > 0 && unique_upperCase > 0 && unique_lowercase):
 		return True;
 
 	return False;
