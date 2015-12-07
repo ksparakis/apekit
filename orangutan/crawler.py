@@ -17,12 +17,13 @@
     limitations under the License.
 '''
 
+import ijson
+import random
 import requests
-import grequests
-import re
 import os
-import math
 from progressbar import ProgressBar
+from urllib import urlopen
+from model_interface import ModelInterface
 
 
 class _DownloadError(Exception):
@@ -45,25 +46,17 @@ class ArchiveCrawler(object):
     ''' 
     
     def __init__(self):
-        self._version       = "v1.0.0"
-        
-        self.archive_url    = "https://archive.org/details/playdrone-apks/"
-        self.meta_url       = "https://www.archive.org/advancedsearch.php"
-        self.download_url   = "http://archive.org/download/"
-        
-        self.num_apks       = 0
-        self.num_repos      = 0
-        self.repos          = list()
-        self.apks           = list()
-        self.MAX_REPOS      = 1000  # there are less than 1000 known apk repositories
-        
+        self._version           = "v2.0.0"
+        self.meta_url           = "https://archive.org/download/playdrone-snapshots/2014-10-31.json"
+        self.mi                 = ModelInterface.get_instance()
+        self.num_apks           = 0
+        self.apks               = list()
         self._pbar              = ProgressBar()
         self._pbar.term_width   = 80
         self._pbar.maxval       = 100  # out of 100%
         self.__progress         = 0
-        
-        self.failures       = list()  # holds apk names that failed to download
-        self.num_downloads  = 0
+        self.failures           = list()  # holds apk names that failed to download
+        self.num_downloads      = 0
        
     
     def __unicode__(self):
@@ -78,232 +71,100 @@ class ArchiveCrawler(object):
         print "Archive Crawler " + self._version
         
 
-    def index_archive(self):
+    def sample(self, n):
         '''
-            Indexes archive.org to find all available apk names and repositories.
+            Samples n apks randomly from the archive.org snapshot on 10-31-2014.
+            We select a random sampling to get a better representation of the
+            market as a whole.
         '''
 
-        # clear if previously initialized
-        del self.repos[:]
-        self.num_repos = 0
-        
         del self.apks[:]
         self.num_apks = 0
         
-        print "indexing apk repositories ..."
-        self._pbar.start()
-        
-        # get all identifiers (repository of apk files)
-        params = {
-            'q':'(playdrone-apk) AND oai_updatedate:2014-08-07',
-            'fl[]':'identifier',
-            'rows': self.MAX_REPOS,
-            'output': 'json',
-        }
-        r = requests.get(self.meta_url, params=params)
-        self.__progress = 50
-        self._pbar.update(self.__progress)
-        
-        for item in r.json()["response"]["docs"]:
-            self.repos.append(self.download_url + item["identifier"] + "/")
-        
-        self.num_repos = len(self.repos)
-        self._pbar.finish()
-        print str(self.num_repos) + " repositories found"
-        
-        # asynchronously scan for total number of apks available
-        print "indexing apks ..."
+        print "sampling apk repository..."
         self._pbar.start()
         self.__progress = 0
-        
-        reqs = list()
-        
-        for u in self.repos:
-            rs = grequests.get(u, hooks=dict(response=self.__process_meta))
-            reqs.append(rs)
-        
-        grequests.map(reqs)
+        pstep = 100.0 / n
+
+        # randomly jump through the metadata on archive.org 
+        f = urlopen(self.meta_url)
+        i = 0
+        c = 0
+        jump = random.randint(100, 1400)
+
+        for item in ijson.items(f, "item"):         
+            i += 1
+            if i == jump:
+                if 'metadata_url' in item and 'apk_url' in item:
+                    self.apks.append(item)
+                    self.__progress += pstep
+                    self._pbar.update(self.__progress)
+                    c += 1
+                
+                    jump = random.randint(1000, 10000)
+                    i = 0
+                
+                    if c == n:
+                        break
+        f.close()
+        self.num_apks = len(self.apks)
         self._pbar.finish()
-        print str(self.num_apks) + " apks found"
-
-
-    def __process_meta(self, r, **kwargs):
+        
+        for i in range(self.num_apks):
+            # cleanup apk metadata 'star_rating' field
+            self.apks[i]['star_rating'] = float(self.apks[i]['star_rating'])
+            # and generate local filepath based on convention
+            self.apks[i]['apk_local'] = "apks/" + self.apks[i]['apk_url'].split('/')[-1]
+            
+        # save apk metadata to database
+        self.mi.add_apps_to_db(self.apks)
+    
+        print str(self.num_apks) + " apks sampled"
+        
+        
+    def get_permissions(self):
         '''
-            Callback for each asynchronous metadata request.
+            Get permissions metadata for sampled apks.
         '''
         
-        # parse html index file links for apk names
-        matches = re.findall(r'(>[\w\.\-]+apk)',r.text)[2:]  # first two items are garbage
-        r.close()
-        repo = r.url.split('/')[-2]  # recover repository name from request
+        if self.num_apks <= 0:
+            print "no apks sampled"
+            return
+            
+        self._pbar.start()
+        self._pbar.maxval = self.num_apks
+        self.__progress = 0
         
-        # store parsed apk names
-        self.num_apks += len(matches)
-        for match in matches:
-            self.apks.append(repo + '/' + match[1:])
-        
-        if self.__progress < 99:  # hang at 99% until complete
-            self.__progress += 0.5
+        for apk in self.apks:
+            app_id = apk['app_id']
+            meta_url = apk['meta_url']
+            
+            meta = requests.get(meta_url).json()
+            permissions = meta['details']['permission']
+            
+            # add permissions to database
+            self.mi.add_permissions_for_app(app_id, permissions)
+            
+            self.__progress += 1
             self._pbar.update(self.__progress)
             
-            
-    def load(self, filename='apks.txt'):
-        '''
-            Loads apk metadata previously saved to specified <filename>.
-            If none specified, attempts to load the metadata from apks.txt.
-        '''
-        
-        if len(filename) == 0:
-            print "invalid file name"
-            return
-            
-        if not os.path.isfile(filename):
-            print "specified file does not exist: " + filename
-            return
-            
-        else:
-            
-            # metadata file found
-            print "loading metadata from " + filename + " ..."
-            
-            # clear previous metadata
-            del self.repos[:]
-            self.num_repos = 0
-            
-            del self.apks[:]
-            self.num_apks = 0
-            
-            f = open(filename, 'r')
-            lines = f.readlines()
-            
-            try:
-                self.num_apks = int(lines[0])
-            except ValueError as err:
-                print "invalid file format"
-                return
-            
-            self._pbar.start()
-            self._pbar.update(34)  # arbitrary, for effect
-            
-            # process metadata from file  
-            for line in lines[1:]:
-                self.apks.append(line[:-1])
-                    
-                repo = line.split('/')[0]
-                if not repo in self.repos:
-                    self.repos.append(repo)
-                    
-            f.close()
-            self.num_apks = len(self.apks)  
-            self.num_repos = len(self.repos)
-            self._pbar.finish()
-            
-            print "loaded " + str(self.num_repos) + " repositories and " + str(self.num_apks) + " apk names"
-                
-    
-    def save(self, filename='apks.txt'):
-        '''
-            Writes the collected apk names to the specified <filename>.
-            If none specified, writes the results to "apks.txt".
-        '''
-
-        # check for valid filename
-        if len(filename) == 0:
-            print "invalid file name"
-            return
-        
-        # check if the <filename> file already exists. If so, add
-        # an integer to its name and try again.
-        # e.g. apks.txt -> apks1.txt -> apks2.txt, etc.
-        fno = 1
-        while os.path.isfile(filename):
-            
-            _old = filename
-            
-            if not filename.find('.') == -1:    
-                parts = filename.split('.')
-                
-                if fno == 1:
-                    parts[-2] += str(fno)
-                else:
-                    parts[-2] = parts[-2][:-1] + str(fno)
-                
-                filename = '.'.join(parts)
-                fno += 1
-            
-            else:
-                # filename has no extension
-                if fno == 1:
-                    filename += str(fno)
-                else:
-                    filename = filename[:-1] + str(fno)
-                    
-                fno += 1
-                
-            print _old + " already exists, trying " + filename
-    
-        f = open(filename, 'w')
-        print "writing apk metadata to " + filename + " ..."
-        
-        # init progress bar
-        self._pbar.start()
-        
-        # write number of apk names to first line of file
-        f.write(str(self.num_apks) + '\n')
-        
-        # write apk names and update progress
-        f.write('\n'.join(self.apks))
-        self.__progress = 60  # arbitrary, for effect
-        self._pbar.update(self.__progress)
-        f.write('\n')
-        f.close()
         self._pbar.finish()
-
-        print str(self.num_apks) + " apk names written to " + filename
-
+        
        
-    def download(self, num_apks, target_dir='apks/'):
+    def download(self, target_dir='apks/'):
         '''
-            Downloads the specified number of apk files from archive.org. If no
-            target directory is specified, the apks are written locally to apks/.
-            To download EVERY apk file, pass 'all' instead of an integer, e.g.:
-            
-            c.download('all')
+            Downloads the sampled apk files from archive.org.
         '''
+        
+        if self.num_apks <= 0:
+            print "no apks sampled"
+            return
         
         if len(target_dir) == 0:
             print "invalid target directory name"
             return
-
-        if str(num_apks).lower() == 'all':
-            num_apks = self.num_apks
-        
-        else:
-            try:
-                num_apks = int(num_apks)
             
-            except ValueError as err:
-                print "invalid number of apks specified"
-                return
-                
-            if num_apks < 1:
-                print "invalid number of apks specified"
-                return
-                
-        # check that apk metadata is already loaded
-        if not self.apks:
-            
-            # attempt to read metadata from file
-            print "no metadata loaded, looking for metadata file ..."
-            self.load()
-            
-            if not self.apks:
-                print "no metadata found, use index_archive() to generate new metadata"
-                return      
-        
-        if num_apks > self.num_apks:
-            print "exceeded number of available apks"
-            return
+        num_apks = self.num_apks
         
         # check to see if the <target_dir> directory currently exists
         # if so, append an integer to the directory name and try again
@@ -328,7 +189,7 @@ class ArchiveCrawler(object):
         os.mkdir(target_dir)
                 
         # init progress bar
-        print "downloading " + str(num_apks) + " apks from " + self.download_url
+        print "downloading " + str(num_apks) + " apks from archive.org"
         self._pbar.start()
         self._pbar.maxval = num_apks
         
@@ -338,13 +199,13 @@ class ArchiveCrawler(object):
         
         for i in range(num_apks):
             try:
-                url = self.download_url + self.apks[i]
+                url = self.apks[i]['apk_url']
                 self.__download_large_file(url, target_dir)
                 self.num_downloads += 1
                 
             except (_DownloadError, requests.exceptions.ConnectionError, requests.exceptions.Timeout) as err:
                 # note if an apk fails to download, but do not terminate
-                self.failures.append(apk_names[i])
+                self.failures.append(self.apks[i]['app_id'])
                 
             except KeyboardInterrupt as err:
                 self._pbar.finish()
@@ -393,4 +254,5 @@ class ArchiveCrawler(object):
                 os.remove(local_filename)
                 
             raise KeyboardInterrupt
+        
             
