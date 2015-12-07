@@ -21,7 +21,6 @@ import ijson
 import random
 import requests
 import os
-from progressbar import ProgressBar
 from urllib import urlopen
 from backend.model_interface import ModelInterface
 
@@ -51,10 +50,6 @@ class ArchiveCrawler(object):
         self.mi                 = ModelInterface.get_instance()
         self.num_apks           = 0
         self.apks               = list()
-        self._pbar              = ProgressBar()
-        self._pbar.term_width   = 80
-        self._pbar.maxval       = 100  # out of 100%
-        self.__progress         = 0
         self.failures           = list()  # holds apk names that failed to download
         self.num_downloads      = 0
        
@@ -82,9 +77,6 @@ class ArchiveCrawler(object):
         self.num_apks = 0
         
         print "sampling apk repository..."
-        self._pbar.start()
-        self.__progress = 0
-        pstep = 100.0 / n
 
         # randomly jump through the metadata on archive.org 
         f = urlopen(self.meta_url)
@@ -97,9 +89,8 @@ class ArchiveCrawler(object):
             if i == jump:
                 if 'metadata_url' in item and 'apk_url' in item:
                     self.apks.append(item)
-                    self.__progress += pstep
-                    self._pbar.update(self.__progress)
                     c += 1
+                    print "sampled " + "{:>4}/{:<4} ".format(c, n) + item['app_id']
                 
                     jump = random.randint(1000, 10000)
                     i = 0
@@ -108,7 +99,6 @@ class ArchiveCrawler(object):
                         break
         f.close()
         self.num_apks = len(self.apks)
-        self._pbar.finish()
         
         for i in range(self.num_apks):
             # cleanup apk metadata 'star_rating' field
@@ -130,25 +120,27 @@ class ArchiveCrawler(object):
         if self.num_apks <= 0:
             print "no apks sampled"
             return
-            
-        self._pbar.start()
-        self._pbar.maxval = self.num_apks
-        self.__progress = 0
         
+        c = 0
         for apk in self.apks:
             app_id = apk['app_id']
             meta_url = apk['metadata_url']
             
             meta = requests.get(meta_url).json()
-            permissions = meta['details']['app_details']['permission']
+            
+            try:
+                permissions = meta['details']['app_details']['permission']
+                
+            except KeyError as err:
+                print app_id + " had no permissions"
+                permissions = []
             
             # add permissions to database
             self.mi.add_permissions_for_app(app_id, permissions)
+            c += 1
+            print "added permissions " + "{:>4}/{:<4} ".format(c, self.num_apks) + app_id
             
-            self.__progress += 1
-            self._pbar.update(self.__progress)
-            
-        self._pbar.finish()
+        print str(self.num_apks) + " permissions added to database"
         
        
     def download(self, target_dir='apks/'):
@@ -189,9 +181,7 @@ class ArchiveCrawler(object):
         os.mkdir(target_dir)
                 
         # init progress bar
-        print "downloading " + str(num_apks) + " apks from archive.org"
-        self._pbar.start()
-        self._pbar.maxval = num_apks
+        print "downloading " + str(num_apks) + " apks from archive.org..."
         
         # download apks
         self.num_downloads = 0
@@ -202,22 +192,15 @@ class ArchiveCrawler(object):
                 url = self.apks[i]['apk_url']
                 self.__download_large_file(url, target_dir)
                 self.num_downloads += 1
+                print "downloaded " + "{:>4}/{:<4} ".format(self.num_downloads, self.num_apks) + self.apks[i]['app_id']
                 
             except (_DownloadError, requests.exceptions.ConnectionError, requests.exceptions.Timeout) as err:
                 # note if an apk fails to download, but do not terminate
                 self.failures.append(self.apks[i]['app_id'])
                 
             except KeyboardInterrupt as err:
-                self._pbar.finish()
-                self._pbar.maxval = 100
                 print "download interrupted, " + str(self.num_downloads) + " apks downloaded"
                 return
-                
-            self._pbar.update(i + 1)
-        
-        self._pbar.finish()
-        self._pbar.maxval = 100  # restore default
-        self.__progress = 0
         
         print "successfully downloaded " + str(num_apks - len(self.failures)) + " apks to " + target_dir
         
