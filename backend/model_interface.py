@@ -48,12 +48,12 @@ class ModelInterface(object):
         with db.atomic():
             try:
                 app = App.get(App.app_id == app_id)
-            except AppDoesNotExist:
+            except:
                 return False
             for name in permissions_list:
                 try:    
                     permission = Permission.get(Permission.name == name)
-                except PermissionDoesNotExist:
+                except:
                     permission = Permission.create(Permission.name == name)
                 # Update the counts for these permissions.
                 Permission.update(count=Permission.count + 1).where(
@@ -67,7 +67,7 @@ class ModelInterface(object):
         try:
             vulnerability = Vulnerability.get(
                 Vulnerability.id == vuln_id)
-        except VulnerabilityDoesNotExist:
+        except:
             return False
         Vulnerability.update(count=Vulnerability.count + 1).where(
             Vulnerability.id == vuln_id)
