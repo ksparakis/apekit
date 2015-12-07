@@ -16,8 +16,8 @@ class ModelInterface(object):
                     Vulnerability,
                     AppVulnerability,
                 ])
-        except:
-            pass
+        except Exception as e:
+            print e
 
 
 
@@ -76,6 +76,18 @@ class ModelInterface(object):
         AppVulnerability.create(app=app, vulnerability=vulnerability,
             filename=filename, line_number=line_number,
             source_code=source_code)
+
+
+    def get_num_apps(self):
+        return App.select().count()
+
+
+    def get_app_for_id(self, a_id):
+        try:
+            app = App.get(App.id == a_id)
+        except:
+            return False
+        return app
 
 
 model_interface = ModelInterface()

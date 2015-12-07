@@ -16,6 +16,9 @@
 
 import fnmatch
 import os
+import subprocess
+
+from backend.model_interface import ModelInterface
 
 
 class Pipeline(object):
@@ -30,6 +33,31 @@ class Pipeline(object):
     def __init__(self):
         self.counter = 0
 
+    def run(self):
+        """
+        Runs the pipeline on the apps from the sqlite db.
+        """
+        mi = ModelInterface.get_instance()
+        num_apps = mi.get_num_apps()
+        for i in xrange(1, num_apps + 1):
+            app = mi.get_app_for_id(i)
+            if not app:
+                print "Failed to get app for id: " + str(i)
+                continue
+            dir_name = "decompiled/" + app.app_id
+            try:
+                subprocess.check_output("python androguard/androdd.py -i " +
+                    app.apk_local + " -o " + dir_name + " -l " +
+                    app.app_id + "*", shell=True)
+            except:
+                print "App " + app.app_id + " could not be decompiled"
+                continue
+            files = self.get_java_files_in_dir(dir_name)
+            for path_to_file in files:
+                self.analyze_file_for_vulns(path_to_file)
+            print "Finished analyzing app " + app.app_id + "for vulns"
+
+
     @staticmethod
     def analyze_file_for_vulns(path_to_file):
         with open(path_to_file) as f:
@@ -37,8 +65,7 @@ class Pipeline(object):
                 line = line.rstrip()
                 # Call the vulnerability analysis modules here.
                 if len(line) > 0:
-                    print line
-                pass
+                    pass
 
     @staticmethod
     def get_java_files_in_dir(directory):
@@ -54,6 +81,4 @@ class Pipeline(object):
 
 if __name__ == "__main__":
     pipeline = Pipeline()
-    files = pipeline.get_java_files_in_dir('test/downtyme/')
-    for path_to_file in files:
-        pipeline.analyze_file_for_vulns(path_to_file)
+    pipeline.run()
