@@ -1,11 +1,10 @@
 from peewee import *
-from datetime import date
 
 db = SqliteDatabase('apekit.db')
 
 class App(Model):
     created = DateField()
-    identifier = CharField()
+    identifier = CharField(unique=True)
     title = CharField()
     version = CharField()
     developer_name = CharField()
@@ -13,6 +12,7 @@ class App(Model):
     star_rating = FloatField()
     metadata_url = TextField()
     apk_url = TextField()
+    apk_local = TextField()
 
     class Meta:
         database = db
@@ -20,6 +20,7 @@ class App(Model):
 
 class Permission(Model):
     name = TextField()
+    count = IntegerField()
 
     class Meta:
         database = db
