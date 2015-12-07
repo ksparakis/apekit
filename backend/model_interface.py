@@ -54,7 +54,7 @@ class ModelInterface(object):
                 try:    
                     permission = Permission.get(Permission.name == name)
                 except:
-                    permission = Permission.create(Permission.name == name)
+                    permission = Permission.create(name=name)
                 # Update the counts for these permissions.
                 Permission.update(count=Permission.count + 1).where(
                     Permission.name == name)
@@ -69,8 +69,10 @@ class ModelInterface(object):
                 Vulnerability.id == vuln_id)
         except:
             return False
-        Vulnerability.update(count=Vulnerability.count + 1).where(
-            Vulnerability.id == vuln_id)
+        if AppVulnerability.select().where(
+            app=app, vulnerability=vulnerability).count() == 0:
+                Vulnerability.update(count=Vulnerability.count + 1).where(
+                    Vulnerability.id == vuln_id)
         AppVulnerability.create(app=app, vulnerability=vulnerability,
             filename=filename, line_number=line_number,
             source_code=source_code)
