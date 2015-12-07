@@ -45,21 +45,20 @@ class ModelInterface(object):
         """
         Add the permissions for an app.
         """
-        with db.atomic():
-            try:
-                app = App.get(App.app_id == app_id)
+        try:
+            app = App.get(App.app_id == app_id)
+        except:
+            return False
+        for name in permissions_list:
+            try:    
+                permission = Permission.get(Permission.name == name)
             except:
-                return False
-            for name in permissions_list:
-                try:    
-                    permission = Permission.get(Permission.name == name)
-                except:
-                    permission = Permission.create(name=name)
-                # Update the counts for these permissions.
-                Permission.update(count=Permission.count + 1).where(
-                    Permission.name == name)
-                # Add the relation to the table.
-                AppPermission.create(app=app, permission=permission)
+                permission = Permission.create(name=name)
+            # Update the counts for these permissions.
+            Permission.update(count=Permission.count + 1).where(
+                Permission.name == name)
+            # Add the relation to the table.
+            AppPermission.create(app=app, permission=permission)
 
 
     def add_vulnerability_for_app(self, app, vuln_id, filename,
