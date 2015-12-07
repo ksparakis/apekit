@@ -6,7 +6,7 @@ c = ArchiveCrawler()
 
 def crawler_sample_archive_test():
     try:
-        c.sample(3)
+        c.sample(1)
         print "crawler_sample_archive_test: PASS"
     except Exception as err:
         print err
@@ -33,9 +33,9 @@ def crawler_download_test():
 def crawler_test_cleanup():
     
     # delete database
-    os.remove("./*.db")
+    os.remove("apekit.db")
     
     # delete downloaded apks
-    shutil.rmtree("./apks/")
+    shutil.rmtree("apks/")
     
     print "crawler_test_cleanup: DONE"
