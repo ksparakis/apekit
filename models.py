@@ -4,15 +4,15 @@ db = SqliteDatabase('apekit.db')
 
 class App(Model):
     created = DateField()
-    identifier = CharField(unique=True)
+    app_id = CharField(unique=True)
     title = CharField()
-    version = CharField()
+    version_string = CharField()
     developer_name = CharField()
     downloads = BigIntegerField()
     star_rating = FloatField()
     metadata_url = TextField()
     apk_url = TextField()
-    apk_local = TextField()
+    apk_local = TextField(default="")
 
     class Meta:
         database = db
@@ -51,3 +51,6 @@ class AppVulnerability(Model):
     filename = TextField()
     line_number = IntegerField()
     source_code = TextField()
+
+    class Meta:
+        database = db
