@@ -18,7 +18,7 @@ def ressemblesKey(inputString):
 	extract = inQuotes(inputString) 
 	extract = str(extract)
 	if extract != False:
-		if lengthIsLessThan14(extract):
+		if lengthNotAppropriate(extract):
 			return False;
 		if containsSpaces(extract):
 			return False;
@@ -30,9 +30,49 @@ def ressemblesKey(inputString):
 		unique_upperCase = uniqueUpperCaseCount(extract)
 		unique_lowerCase = uniqueLowerCaseCount(extract)
 
-		if unique_letters > 5 or numbers == len(extract) or unique_upperCase == len(extract) or (unique_letters > 2 and symbols > 0 and unique_upperCase > 0 and unique_lowerCase):
+		## Filter out typical file names and websites
+		if "//" in extract: #website detection
+			if DEBUG:
+				print "Detected web url..."
+			return False
+	
+		extension = checkIfFilename(extract)
+		if extension:
+			if DEBUG:
+				print "Detected filename..." 
+			return False;
+
+		
+		if checkConsecutiveASCII(extract):
+			if DEBUG:
+				print "Detected consecutive letters... not random key"
+			return False;
+		#we know that this must at least be a password of some type
+		if numbers == len(extract): 
+			if DEBUG:
+				print "All numbers detected... Most likely password or key"
 			return True;
-	return False;
+		
+		if unique_upperCase == unique_letters and numbers > 2: 
+			if DEBUG:
+				print "All upper case letters and numbers detected... Most likely a key"
+			return True;
+	
+		if (unique_letters > 6 and symbols > 0 and unique_upperCase > 0  and unique_lowerCase > 0 and numbers > 2):
+			if DEBUG:
+				print "Detected: Symbols, numbers, random upper case and lower case chars...Most likely a key or token"
+			return True;
+		
+		if (symbols>0 and unique_letters > 6 and unique_upperCase == 0 and unique_lowerCase > 0 and numbers > 2):
+			if DEBUG:
+				print "Detected: Symbols, numbers, and random lower case chars... Most likely a key"
+			return True;
+		
+		if (unique_letters > 6 and unique_upperCase == 0 and unique_lowerCase > 0 and numbers > 2):
+			if DEBUG:
+				print "Detected: numbers, and random lower case chars... Most likely a key"
+			return True;
+	return False;	
 
 
 def inQuotes(inputString):
@@ -40,7 +80,7 @@ def inQuotes(inputString):
 	result = re.findall(r'"([^"]*)"', inputString)
 	if result != "":
 		if DEBUG:
-			print "Extracted string = " + str(result)
+			print "Extracted string = " + result[0] + " from " + inputString
 		return result;
 	result = re.findall(r"'(.*?)'", inputString)
 	if result != "":
@@ -68,6 +108,14 @@ def lengthIsLessThan14(inputString):
 		return True;
 	if DEBUG:
 		print "\tLength is > 14"
+
+def lengthNotAppropriate(inputString):
+	if len(inputString) < 13 or len(inputString) > 60:
+		if DEBUG:
+			print "\tLength does not fit specifications of  13 < len > 60"
+		return True;
+	if DEBUG:
+		print "\tLength is ok"
 	return False
 
 def numberCount(inputString):
@@ -114,3 +162,37 @@ def uniqueUpperCaseCount(inputString):
 	if DEBUG:
 		print "\tuniqueUpperCaseCount of = " + str(len(arr))
 	return len(arr);
+
+def checkIfFilename(extract):
+	count = extract.count('.')
+	if count > 1: 
+		return True;
+
+	loc = extract.find('.')
+	if loc > -1 and (len(extract) - loc) < 6:
+		return True;
+	return False;
+
+def checkConsecutiveASCII(inputString):
+
+	if "abc" in inputString.lower() or "123" in inputString:
+		return True;
+
+	for x in inputString:
+		try:
+			if (ord(inputString[x])+1) == ord(inputString[x+1]):
+				if (ord(inputString[x+1])+1) == ord(inputString[x+2]):
+					if DEBUG:
+						print "Found Foward consecutive ASCII"
+					return True;
+		except:
+			lol = 1
+		try: 
+			if (ord(inputString[x])+1) == ord(inputString[x+1]):
+				if (ord(inputString[x+1])-1) == ord(inputString[x+2]):		
+					if DEBUG:
+						print "Found Backwards consecutive ASCII"
+					return True;
+		except:
+			return False;
+	return False;
