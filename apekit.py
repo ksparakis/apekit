@@ -19,6 +19,7 @@ import os
 import subprocess
 
 from backend.model_interface import ModelInterface
+from vulns.vuln_lib_checker import VulnLibChecker
 
 
 class Pipeline(object):
@@ -32,7 +33,6 @@ class Pipeline(object):
 
     def __init__(self):
         self.counter = 0
-        self.vln = VulnLibChecker()
 
     def run(self):
         """
@@ -63,6 +63,7 @@ class Pipeline(object):
     @staticmethod
     def analyze_file_for_vulns(app, path_to_file):
         mi = ModelInterface.get_instance()
+        vln = VulnLibChecker.get_instance()
         with open(path_to_file) as f:
             line_counter = 1
             for line in f:
@@ -72,6 +73,7 @@ class Pipeline(object):
                     # Check for potentially vulnerable library.
                     ids = vln.vulnCheck(line)
                     for vuln_id in ids:
+                        print "Adding lib vuln for vuln id: " + str(vuln_id)
                         mi.add_vulnerability_for_app(
                             app, vuln_id, path_to_file, line_counter, line)
                 line_counter += 1

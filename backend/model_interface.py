@@ -69,11 +69,12 @@ class ModelInterface(object):
                 Vulnerability.id == vuln_id)
         except:
             return False
-        if AppVulnerability.select().where(
-            app=app, vulnerability=vulnerability).count() == 0:
-                query = Vulnerability.update(count=Vulnerability.count + 1).where(
-                    Vulnerability.id == vuln_id)
-                query.execute()
+        count = AppVulnerability.select().where(AppVulnerability.app ==
+            app, AppVulnerability.vulnerability == vulnerability).count()
+        if count == 0:
+            query = Vulnerability.update(count=Vulnerability.count + 1).where(
+                Vulnerability.id == vuln_id)
+            query.execute()
         AppVulnerability.create(app=app, vulnerability=vulnerability,
             filename=filename, line_number=line_number,
             source_code=source_code)

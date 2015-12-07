@@ -26,7 +26,7 @@ class VulnLibChecker:
 		c = 0
 		t = CVE();
 		
-		f = open('vulnerabilities.txt')
+		f = open('vulns/vulnerabilities.txt')
 		for line in iter(f):
 			if c == 0:
 				t.id = line[:-1]
@@ -48,6 +48,9 @@ class VulnLibChecker:
 				
 		f.close()
 				
+	@staticmethod
+	def get_instance():
+		return vuln_lib_checker
 		
 	
 	def add2list(self, obj):
@@ -77,6 +80,8 @@ class VulnLibChecker:
 				report.append(int(self.l[ii].id))
 		return report
 
+
+vuln_lib_checker = VulnLibChecker()
 
 if __name__ == "__main__":
 	vln = VulnLibChecker()
