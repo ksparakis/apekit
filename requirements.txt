@@ -1,4 +1,5 @@
 ijson==2.2
 peewee==2.7.4
 progressbar==2.3
+pysqlite==2.8.1
 requests==2.8.1
