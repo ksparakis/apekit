@@ -108,7 +108,12 @@ class ArchiveCrawler(object):
             self.apks[i]['apk_local'] = "apks/" + self.apks[i]['apk_url'].split('/')[-1]
             
         # save apk metadata to database
-        self.mi.add_apps_to_db(self.apks)
+        # must do this in batches to avoid overwhelming peewee
+        i = 0
+        batch_size = 100
+        while i < self.num_apks:
+            self.mi.add_apps_to_db(self.apks[i:i+batch_size])
+            i += batch_size
     
         print str(self.num_apks) + " apks sampled"
         
