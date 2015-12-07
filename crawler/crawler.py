@@ -24,6 +24,7 @@ import os
 from urllib import urlopen
 from backend.model_interface import ModelInterface
 
+ARCHIVE_SIZE = 1400000  # est.
 
 class _DownloadError(Exception):
     '''
@@ -82,7 +83,7 @@ class ArchiveCrawler(object):
         f = urlopen(self.meta_url)
         i = 0
         c = 0
-        jump = random.randint(100, 1400)
+        jump = random.randint(100, (ARCHIVE_SIZE / n))  # ensures we don't run out of metadata
 
         for item in ijson.items(f, "item"):         
             i += 1
@@ -92,7 +93,7 @@ class ArchiveCrawler(object):
                     c += 1
                     print "sampled " + "{:>4}/{:<4} ".format(c, n) + item['app_id']
                 
-                    jump = random.randint(1000, 10000)
+                    jump = random.randint(100, (ARCHIVE_SIZE / n))  # ensures we don't run out of metadata
                     i = 0
                 
                     if c == n:
