@@ -21,6 +21,8 @@ import ijson
 import random
 import requests
 import os
+import urllib2
+from urlgrabber.keepalive import HTTPHandler
 from backend.model_interface import ModelInterface
 
 ARCHIVE_SIZE = 1400000  # est.
@@ -46,7 +48,7 @@ class ArchiveCrawler(object):
     
     def __init__(self):
         self._version           = "v2.0.0"
-        self.meta_path          = "./metadata.json"
+        self.meta_url           = "https://archive.org/download/playdrone-snapshots/2014-10-31.json"
         self.mi                 = ModelInterface.get_instance()
         self.num_apks           = 0
         self.apks               = list()
@@ -78,8 +80,13 @@ class ArchiveCrawler(object):
         
         print "sampling apk repository..."
 
+        # keep connection to metadata url open
+        keepalive_handler = HTTPHandler()
+        opener = urllib2.build_opener(keepalive_handler)
+        urllib2.install_opener(opener)
+        
         # randomly jump through the metadata on archive.org 
-        f = open(self.meta_path, 'r')
+        f = urllib2.urlopen(self.meta_url)
         i = 0
         c = 0
         jump = random.randint(100, (ARCHIVE_SIZE / n))  # ensures we don't run out of metadata
