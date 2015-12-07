@@ -8,7 +8,7 @@ def crawler_sample_archive_test():
     try:
         c.sample(3)
         print "crawler_sample_archive_test: PASS"
-    except * as err:
+    except Exception as err:
         print err
         print "crawler_sample_archive_test: FAIL"
     
@@ -17,7 +17,7 @@ def crawler_get_permissions_test():
         c.get_permissions()
         print "crawler_get_permissions_test: PASS"
     
-    except * as err:
+    except Exception as err:
         print err
         print "crawler_get_permissions_test: FAIL"
     
@@ -26,7 +26,7 @@ def crawler_download_test():
         c.download()
         print "crawler_download_test: PASS"
         
-    except * as err:
+    except Exception as err:
         print err
         print "crawler_download_test: FAIL"
         
