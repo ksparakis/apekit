@@ -20,7 +20,7 @@ import subprocess
 
 from backend.model_interface import ModelInterface
 from vulns.vuln_lib_checker import VulnLibChecker
-
+from vulns.keySearch import keySearch
 
 class Pipeline(object):
     """
@@ -76,6 +76,11 @@ class Pipeline(object):
                         print "Adding lib vuln for vuln id: " + str(vuln_id)
                         mi.add_vulnerability_for_app(
                             app, vuln_id, path_to_file, line_counter, line)
+                    # Check for secure keys.
+                    is_key = keySearch(line)
+                    if is_key[0]:
+                        mi.add_vulnerability_for_app(app, 10,
+                            path_to_file, line_counter, line)
                 line_counter += 1
 
     @staticmethod
