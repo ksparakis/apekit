@@ -20,7 +20,7 @@ class App(Model):
 
 class Permission(Model):
     name = TextField()
-    count = IntegerField()
+    count = IntegerField(default=0)
 
     class Meta:
         database = db
@@ -38,7 +38,7 @@ class AppPermission(Model):
 class Vulnerability(Model):
     description = CharField()
     # How many apps have this vulnerability?
-    count = IntegerField()
+    count = IntegerField(default=0)
 
     class Meta:
         database = db
