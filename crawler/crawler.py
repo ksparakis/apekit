@@ -140,7 +140,7 @@ class ArchiveCrawler(object):
             meta_url = apk['metadata_url']
             
             meta = requests.get(meta_url).json()
-            permissions = meta['details']['permission']
+            permissions = meta['details']['app_details']['permission']
             
             # add permissions to database
             self.mi.add_permissions_for_app(app_id, permissions)

@@ -1,4 +1,4 @@
 *.pyc
 venv/**
-
+*.db
 androguard/**
