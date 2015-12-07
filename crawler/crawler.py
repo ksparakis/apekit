@@ -91,12 +91,13 @@ class ArchiveCrawler(object):
                     self.apks.append(item)
                     c += 1
                     print "sampled " + "{:>4}/{:<4} ".format(c, n) + item['app_id']
-                
-                    jump = random.randint(100, (ARCHIVE_SIZE / n))  # ensures we don't run out of metadata
-                    i = 0
-                
+
                     if c == n:
                         break
+                        
+                jump = random.randint(100, (ARCHIVE_SIZE / n))  # ensures we don't run out of metadata
+                i = 0
+                
         f.close()
         self.num_apks = len(self.apks)
         
