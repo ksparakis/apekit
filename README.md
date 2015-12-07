@@ -9,7 +9,7 @@ Android app vulnerability analysis toolkit.
 -------
 * **orangutan** - Does the heavy lifting. Finds and fetches APKs collected by the Playdrone project and hosted on Archive.org.
 * **bonobo** - TBA
-* **chimp** - TBA
+* **chimp** - Finds potential vulnerabilities to whatever string is passed to chimp from lines of code. It does that by referencing to a number of known vulnerabilities and reports the CVE numbers.
 * **gorilla** - TBA
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png)Authors
@@ -29,4 +29,3 @@ December 2015
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png)Copyright and License
 ---------------------
 Copyright 2015. Code released under the [Apache 2.0](./LICENSE) license.
-

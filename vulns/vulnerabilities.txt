@@ -1,0 +1,48 @@
+CVE-2014-8610
+https://www.cvedetails.com/cve/CVE-2014-8610/
+AndroidManifest.xml in Android before 5.0.0 does not require the SEND_SMS permission for the SmsReceiver receiver, which allows attackers to send stored SMS messages, and consequently transmit arbitrary new draft SMS messages or trigger additional per-message charges from a network operator for old messages, via a crafted application that broadcasts an intent with the com.android.mms.transaction.MESSAGE_SENT action, aka Bug 17671795.
+SEND_SMS
+com.android.mms.transaction.MESSAGE_SENT
+*
+CVE-2014-8507
+https://www.cvedetails.com/cve/CVE-2014-8507/
+Multiple SQL injection vulnerabilities in the queryLastApp method in packages/WAPPushManager/src/com/android/smspush/WapPushManager.java in the WAPPushManager module in Android before 5.0.0 allow remote attackers to execute arbitrary SQL commands, and consequently launch an activity or service, via the (1) wapAppId or (2) contentType field of a PDU for a malformed WAPPush message, aka Bug 17969135.
+IWapPushManager
+.processMessage
+*
+CVE-2014-7911
+https://www.cvedetails.com/cve/CVE-2014-7911/
+luni/src/main/java/java/io/ObjectInputStream.java in the java.io.ObjectInputStream implementation in Android before 5.0.0 does not verify that deserialization will result in an object that met the requirements for serialization, which allows attackers to execute arbitrary code via a crafted finalize method for a serialized object in an ArrayMap Parcel within an intent sent to system_service, as demonstrated by the finalize method of android.os.BinderProxy, aka Bug 15874291.
+IBinder
+*
+CVE-2012-4222
+https://www.cvedetails.com/cve/CVE-2012-4222/
+drivers/gpu/msm/kgsl.c in the Qualcomm Innovation Center (QuIC) Graphics KGSL kernel-mode driver for Android 2.3 through 4.2 allows attackers to cause a denial of service (NULL pointer dereference) via an application that uses crafted arguments in a local kgsl_ioctl call.
+kgsl_ioctl
+*
+CVE-2011-4276
+https://www.cvedetails.com/cve/CVE-2011-4276/
+The Bluetooth service (com/android/phone/BluetoothHeadsetService.java) in Android 2.3 before 2.3.6 allows remote attackers within Bluetooth range to obtain contact data via an AT phonebook transfer.
+BluetoothHeadsetService
+*
+CVE-2011-3874 
+https://www.cvedetails.com/cve/CVE-2011-3874/
+Stack-based buffer overflow in libsysutils in Android 2.2.x through 2.2.2 and 2.3.x through 2.3.6 allows user-assisted remote attackers to execute arbitrary code via an application that calls the FrameworkListener::dispatchCommand method with the wrong number of arguments, as demonstrated by zergRush to trigger a use-after-free error.
+dispatchCommand
+*
+CVE-2013-2597
+http://androidvulnerabilities.org/vulnerabilities/Qualcomm_acdb_audio_buffer_overflow
+The acdb audio driver provides an ioctl system call interface to user space clients for communication. When processing arguments passed to the ioctl handler, a user space supplied size is used to copy as many bytes from user space to a local stack buffer without proper bounds checking. An application with access to the /dev/msm_acdb device file (audio or system group) can use this flaw to, e.g., elevate privileges.
+/dev/msm_acdb
+*
+CVE-2014-3100
+http://androidvulnerabilities.org/vulnerabilities/keystore_buffer
+Stack-based buffer overflow in the encode_key function in /system/bin/keystore in the KeyStore service in Android 4.3 allows attackers to execute arbitrary code, and consequently obtain sensitive key information or bypass intended restrictions on cryptographic operations, via a long key name.
+encode_key
+*
+Google bug 13678484 **
+http://androidvulnerabilities.org/vulnerabilities/Fake_ID
+The software does not properly validate an application's certificate chain. An application can supply a specially crafted application identity certificate to impersonate a privileged application and gain access to vendor-specific device administration extensions. The vulnerability resides in the createChain() and findCert() functions of the Android JarUtils class. [securitytracker-1030654] Google bug 13678484 [blackhat-briefing-fakeid]
+createChain()
+findCert()
+*
