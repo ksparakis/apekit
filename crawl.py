@@ -6,7 +6,7 @@
 from datetime import datetime
 from crawler.crawler import ArchiveCrawler
 
-NUM_SAMPLES = 5
+NUM_SAMPLES = 1000
 
 c = ArchiveCrawler()
 print ("="*80)
