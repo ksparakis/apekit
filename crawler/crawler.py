@@ -90,7 +90,7 @@ class ArchiveCrawler(object):
                 if 'metadata_url' in item and 'apk_url' in item:
                     self.apks.append(item)
                     c += 1
-                    print "sampled " + "{:>4}/{:<4} ".format(c, n) + item['app_id']
+                    print "sampled " + "{:>5}/{:<5} ".format(c, n) + item['app_id']
 
                     if c == n:
                         break
@@ -144,7 +144,7 @@ class ArchiveCrawler(object):
             # add permissions to database
             self.mi.add_permissions_for_app(app_id, permissions)
             c += 1
-            print "added permissions " + "{:>4}/{:<4} ".format(c, self.num_apks) + app_id
+            print "added permissions " + "{:>5}/{:<5} ".format(c, self.num_apks) + app_id
             
         print str(self.num_apks) + " permissions added to database"
         
@@ -198,7 +198,7 @@ class ArchiveCrawler(object):
                 url = self.apks[i]['apk_url']
                 self.__download_large_file(url, target_dir)
                 self.num_downloads += 1
-                print "downloaded " + "{:>4}/{:<4} ".format(self.num_downloads, self.num_apks) + self.apks[i]['app_id']
+                print "downloaded " + "{:>5}/{:<5} ".format(self.num_downloads, self.num_apks) + self.apks[i]['app_id']
                 
             except (_DownloadError, requests.exceptions.ConnectionError, requests.exceptions.Timeout) as err:
                 # note if an apk fails to download, but do not terminate
