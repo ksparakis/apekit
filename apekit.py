@@ -41,6 +41,7 @@ class Pipeline(object):
         """
         Runs the pipeline on the apps from the sqlite db.
         """
+        failed_to_decompile_count = 0
         mi = ModelInterface.get_instance()
         num_apps = mi.get_num_apps()
         for i in xrange(1, num_apps + 1):
@@ -56,11 +57,13 @@ class Pipeline(object):
                         app.app_id + "*", shell=True)
                 except:
                     print "App " + app.app_id + " could not be decompiled"
+                    failed_to_decompile_count += 1
                     continue
             files = self.get_java_files_in_dir(dir_name)
             for path_to_file in files:
                 self.analyze_file_for_vulns(app, path_to_file)
             print "Finished analyzing app " + app.app_id + "for vulns"
+        print "Failed to decompile " + str(failed_to_decompile_count)
 
 
     # def chart_vulns(self):
