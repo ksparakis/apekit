@@ -1,7 +1,7 @@
 def httpschecker(string):
 
-    substring1 = "http"
-    substring2 = "https"
+    substring1 = "http:"
+    substring2 = "https:"
 
     #bool flag1 = false
     #bool flag2 = false
@@ -30,5 +30,5 @@ def httpschecker(string):
         result = True
     elif (flag1 == False and flag2 == False):
         #print("No URL's in this code, broseph!")
-
+        result = False
     return result

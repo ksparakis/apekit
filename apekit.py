@@ -21,6 +21,8 @@ import subprocess
 from backend.model_interface import ModelInterface
 from vulns.vuln_lib_checker import VulnLibChecker
 from vulns.keySearch import keySearch
+from vulns.httpschecker import httpschecker
+from vulns.commentchecker import commentchecker
 
 class Pipeline(object):
     """
@@ -73,13 +75,19 @@ class Pipeline(object):
                     # Check for potentially vulnerable library.
                     ids = vln.vulnCheck(line)
                     for vuln_id in ids:
-                        print "Adding lib vuln for vuln id: " + str(vuln_id)
                         mi.add_vulnerability_for_app(
                             app, vuln_id, path_to_file, line_counter, line)
                     # Check for secure keys.
                     is_key = keySearch(line)
                     if is_key[0]:
                         mi.add_vulnerability_for_app(app, 10,
+                            path_to_file, line_counter, line)
+                    # Check for http instead of https.
+                    if httpschecker(line):
+                        mi.add_vulnerability_for_app(app, 11,
+                            path_to_file, line_counter, line)
+                    if commentchecker(line):
+                        mi.add_vulnerability_for_app(app, 12,
                             path_to_file, line_counter, line)
                 line_counter += 1
 
