@@ -41,6 +41,9 @@ class Pipeline(object):
         """
         Runs the pipeline on the apps from the sqlite db.
         """
+        print ("="*80)
+        print "{:<40}{:>40}".format("DECOMPILATION STARTED", str(datetime.now()))
+        print ("="*80)
         failed_to_decompile_count = 0
         mi = ModelInterface.get_instance()
         num_apps = mi.get_num_apps()
@@ -62,9 +65,11 @@ class Pipeline(object):
             files = self.get_java_files_in_dir(dir_name)
             for path_to_file in files:
                 self.analyze_file_for_vulns(app, path_to_file)
-            print "Finished analyzing app " + app.app_id + "for vulns"
-        print "Failed to decompile " + str(failed_to_decompile_count)
-
+            print "{:>5}/{:<5} ".format(i, num_apps) + app.app_id
+        print "Failed to decompile " + str(failed_to_decompile_count) + " apps"
+        print ("="*80)
+        print "{:<40}{:>40}".format("DECOMPILATION COMPLETED", str(datetime.now()))
+        print ("="*80)
 
     # def chart_vulns(self):
     #   mi = ModelInterface.get_instance()
