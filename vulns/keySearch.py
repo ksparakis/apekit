@@ -2,7 +2,7 @@
 # **Parameters : inputString- a line of code or a string 
 # **Output : False if key does not look like a private key of anykind
 #	     Returns Array[True, Keytype]- keytype will be null if cant specifiy 
-DEBUG = True 
+DEBUG = False 
 
 def keySearch ( inputString ):
 	if ressemblesKey(inputString):
@@ -83,12 +83,12 @@ def inQuotes(inputString):
 	if result != "":
 		if DEBUG:
 			print "Extracted string = " + result[0] + " from " + inputString
-		return result;
+		return result[0];
 	result = re.findall(r"'(.*?)'", inputString)
 	if result != "":
 		if DEBUG:
 			print "Extracted string = " + str(result)
-		return result;
+		return result[0];
 	if DEBUG:
 		print "Was unable to extract potential string from - "+ str(inputString) 
 	return False;
@@ -155,38 +155,43 @@ def uniqueUpperCaseCount(inputString):
 			arr.append(i)
 	if DEBUG:
 		print "\tuniqueUpperCaseCount of = " + str(len(arr))
-	return len(arr);
+	return len(arr)
 
 def checkIfFilename(extract):
 	count = extract.count('.')
 	if count > 1: 
-		return True;
+		return True
+	elif count == 1:
+		loc = extract.index('.')
+		if DEBUG:
+			print "length: "+ str(len(extract))
+			print "location:"+ str(loc)
+			print extract
+			print "length of extension = "+str((len(extract) - loc))
+			print "extension =" + str((len(extract) - loc) < 6)
+		if (len(extract) - loc) < 6:
+			return True
 
-	loc = extract.find('.')
-	if loc > -1 and (len(extract) - loc) < 6:
-		return True;
-	return False;
+	return False
 
 def checkConsecutiveASCII(inputString):
 
-	if "abc" in inputString.lower() or "123" in inputString:
-		return True;
-
-	for x in inputString:
+	#if "abc" in inputString.lower() or "123" in inputString:
+	for x in xrange(len(inputString)):
 		try:
 			if (ord(inputString[x])+1) == ord(inputString[x+1]):
 				if (ord(inputString[x+1])+1) == ord(inputString[x+2]):
 					if DEBUG:
 						print "Found Foward consecutive ASCII"
-					return True;
+					return True
 		except:
-			lol = 1
+			pass
 		try: 
 			if (ord(inputString[x])+1) == ord(inputString[x+1]):
 				if (ord(inputString[x+1])-1) == ord(inputString[x+2]):		
 					if DEBUG:
 						print "Found Backwards consecutive ASCII"
-					return True;
+					return True
 		except:
-			return False;
-	return False;
+			pass
+	return False
