@@ -61,7 +61,6 @@ class Pipeline(object):
             for path_to_file in files:
                 self.analyze_file_for_vulns(app, path_to_file)
             print "Finished analyzing app " + app.app_id + "for vulns"
-        # Chart the vulnerability results.
 
 
     def chart_vulns(self):
