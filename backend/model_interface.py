@@ -19,8 +19,6 @@ class ModelInterface(object):
         except Exception as e:
             print e
 
-
-
     @staticmethod
     def get_instance():
         return model_interface

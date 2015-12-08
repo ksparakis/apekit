@@ -62,6 +62,11 @@ class Pipeline(object):
                 self.analyze_file_for_vulns(app, path_to_file)
             print "Finished analyzing app " + app.app_id + "for vulns"
         # Chart the vulnerability results.
+
+
+    def chart_vulns(self):
+        mi = ModelInterface.get_instance()
+        num_apps = mi.get_num_apps()
         chart_vulns(mi.get_vulnerabilities_and_descriptions(), num_apps)
 
 
@@ -109,3 +114,4 @@ class Pipeline(object):
 if __name__ == "__main__":
     pipeline = Pipeline()
     pipeline.run()
+    # pipeline.chart_vulns()
