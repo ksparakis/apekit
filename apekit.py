@@ -19,7 +19,11 @@ import os
 import subprocess
 
 from backend.model_interface import ModelInterface
-
+from vulns.vuln_lib_checker import VulnLibChecker
+from vulns.keySearch import keySearch
+from vulns.httpschecker import httpschecker
+from vulns.commentchecker import commentchecker
+from charting.charting import chart_vulns
 
 class Pipeline(object):
     """
@@ -45,27 +49,54 @@ class Pipeline(object):
                 print "Failed to get app for id: " + str(i)
                 continue
             dir_name = "decompiled/" + app.app_id
-            try:
-                subprocess.check_output("python androguard/androdd.py -i " +
-                    app.apk_local + " -o " + dir_name + " -l " +
-                    app.app_id + "*", shell=True)
-            except:
-                print "App " + app.app_id + " could not be decompiled"
-                continue
+            if not os.path.isdir(dir_name):
+                try:
+                    subprocess.check_output("python androguard/androdd.py -i " +
+                        app.apk_local + " -o " + dir_name + " -l " +
+                        app.app_id + "*", shell=True)
+                except:
+                    print "App " + app.app_id + " could not be decompiled"
+                    continue
             files = self.get_java_files_in_dir(dir_name)
             for path_to_file in files:
-                self.analyze_file_for_vulns(path_to_file)
+                self.analyze_file_for_vulns(app, path_to_file)
             print "Finished analyzing app " + app.app_id + "for vulns"
 
 
+    def chart_vulns(self):
+        mi = ModelInterface.get_instance()
+        num_apps = mi.get_num_apps()
+        chart_vulns(mi.get_vulnerabilities_and_descriptions(), num_apps)
+
+
     @staticmethod
-    def analyze_file_for_vulns(path_to_file):
+    def analyze_file_for_vulns(app, path_to_file):
+        mi = ModelInterface.get_instance()
+        vln = VulnLibChecker.get_instance()
         with open(path_to_file) as f:
+            line_counter = 1
             for line in f:
                 line = line.rstrip()
                 # Call the vulnerability analysis modules here.
                 if len(line) > 0:
-                    pass
+                    # Check for potentially vulnerable library.
+                    ids = vln.vulnCheck(line)
+                    for vuln_id in ids:
+                        mi.add_vulnerability_for_app(
+                            app, vuln_id, path_to_file, line_counter, line)
+                    # Check for secure keys.
+                    is_key = keySearch(line)
+                    if is_key[0]:
+                        mi.add_vulnerability_for_app(app, 10,
+                            path_to_file, line_counter, line)
+                    # Check for http instead of https.
+                    if httpschecker(line):
+                        mi.add_vulnerability_for_app(app, 11,
+                            path_to_file, line_counter, line)
+                    if commentchecker(line):
+                        mi.add_vulnerability_for_app(app, 12,
+                            path_to_file, line_counter, line)
+                line_counter += 1
 
     @staticmethod
     def get_java_files_in_dir(directory):
@@ -82,3 +113,4 @@ class Pipeline(object):
 if __name__ == "__main__":
     pipeline = Pipeline()
     pipeline.run()
+    # pipeline.chart_vulns()

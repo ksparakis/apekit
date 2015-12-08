@@ -19,8 +19,6 @@ class ModelInterface(object):
         except Exception as e:
             print e
 
-
-
     @staticmethod
     def get_instance():
         return model_interface
@@ -69,11 +67,12 @@ class ModelInterface(object):
                 Vulnerability.id == vuln_id)
         except:
             return False
-        if AppVulnerability.select().where(
-            app=app, vulnerability=vulnerability).count() == 0:
-                query = Vulnerability.update(count=Vulnerability.count + 1).where(
-                    Vulnerability.id == vuln_id)
-                query.execute()
+        count = AppVulnerability.select().where(AppVulnerability.app ==
+            app, AppVulnerability.vulnerability == vulnerability).count()
+        if count == 0:
+            query = Vulnerability.update(count=Vulnerability.count + 1).where(
+                Vulnerability.id == vuln_id)
+            query.execute()
         AppVulnerability.create(app=app, vulnerability=vulnerability,
             filename=filename, line_number=line_number,
             source_code=source_code)
@@ -89,6 +88,13 @@ class ModelInterface(object):
         except:
             return False
         return app
+
+
+    def get_vulnerabilities_and_descriptions(self):
+        vulns = []
+        for v in Vulnerability.select().order_by(Vulnerability.count.desc()):
+            vulns.append([v.description, v.count])
+        return vulns
 
 
 model_interface = ModelInterface()

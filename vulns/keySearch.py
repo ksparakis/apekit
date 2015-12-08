@@ -30,8 +30,6 @@ def ressemblesKey(inputString):
 		unique_upperCase = uniqueUpperCaseCount(extract)
 		unique_lowerCase = uniqueLowerCaseCount(extract)
 
-
-
 		## Filter out typical file names and websites
 		if "//" in extract: #website detection
 			if DEBUG:
@@ -102,6 +100,14 @@ def containsSpaces (inputString):
 		print "\tDoes not contain spaces."
 	return False;
 
+
+def lengthIsLessThan14(inputString):
+	if len(inputString) < 14:
+		if DEBUG:
+			print "\tLength is < 14"
+		return True;
+	if DEBUG:
+		print "\tLength is > 14"
 
 def lengthNotAppropriate(inputString):
 	if len(inputString) < 13 or len(inputString) > 60:
