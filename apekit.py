@@ -23,6 +23,7 @@ from vulns.vuln_lib_checker import VulnLibChecker
 from vulns.keySearch import keySearch
 from vulns.httpschecker import httpschecker
 from vulns.commentchecker import commentchecker
+from charting.charting import chart_vulns
 
 class Pipeline(object):
     """
@@ -60,6 +61,8 @@ class Pipeline(object):
             for path_to_file in files:
                 self.analyze_file_for_vulns(app, path_to_file)
             print "Finished analyzing app " + app.app_id + "for vulns"
+        # Chart the vulnerability results.
+        chart_vulns(mi.get_vulnerabilities_and_descriptions(), num_apps)
 
 
     @staticmethod

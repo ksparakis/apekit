@@ -10,13 +10,13 @@ def commentchecker(string):
     flag01 = False
     flag02 = False
     
-    if (substring1 in string):
+    if substring1 in string:
         flag01 = True
         #print("you have a comment")
-    elif (substring2 in string):
+    elif substring2 in string:
         flag01 = True
         #print("you have a multiline comment")
-    elif(string.index(substring3) == 0):
+    elif string.startswith(substring3):
         flag01 = True
 
         

@@ -92,4 +92,11 @@ class ModelInterface(object):
         return app
 
 
+    def get_vulnerabilities_and_descriptions(self):
+        vulns = []
+        for v in Vulnerability.select().order_by(Vulnerability.count.desc()):
+            vulns.append([v.description, v.count])
+        return vulns
+
+
 model_interface = ModelInterface()
