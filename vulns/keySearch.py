@@ -31,11 +31,21 @@ def ressemblesKey(inputString):
 		unique_lowerCase = uniqueLowerCaseCount(extract)
 
 		## Filter out typical file names and websites
-		if "//" in extract: #website detection
+		if "/" in extract: #website detection
 			if DEBUG:
 				print "Detected web url..."
 			return False
+
+		if "\\" in extract: #website detection
+			if DEBUG:
+				print "Detected seperator"
+			return False
 	
+		if doSymbolsRepeat(extract): 
+			if DEBUG:
+				print "Detected repeating symbols"
+			return False
+
 		extension = checkIfFilename(extract)
 		if extension:
 			if DEBUG:
@@ -44,6 +54,11 @@ def ressemblesKey(inputString):
 
 		
 		if checkConsecutiveASCII(extract):
+			if DEBUG:
+				print "Detected consecutive letters... not random key"
+			return False;
+
+		if checkIncrementingASCII(extract):
 			if DEBUG:
 				print "Detected consecutive letters... not random key"
 			return False;
@@ -169,13 +184,13 @@ def checkIfFilename(extract):
 			print "location:"+ str(loc)
 			print extract
 			print "length of extension = "+str((len(extract) - loc))
-			print "extension =" + str((len(extract) - loc) < 6)
+			print "extension =" + str((len(extract) - loc) < 8)
 		if (len(extract) - loc) < 6:
 			return True
 
 	return False
 
-def checkConsecutiveASCII(inputString):
+def checkIncrementingASCII(inputString):
 
 	#if "abc" in inputString.lower() or "123" in inputString:
 	for x in xrange(len(inputString)):
@@ -183,7 +198,7 @@ def checkConsecutiveASCII(inputString):
 			if (ord(inputString[x])+1) == ord(inputString[x+1]):
 				if (ord(inputString[x+1])+1) == ord(inputString[x+2]):
 					if DEBUG:
-						print "Found Foward consecutive ASCII"
+						print "Found Foward incrementing ASCII"
 					return True
 		except:
 			pass
@@ -191,8 +206,42 @@ def checkConsecutiveASCII(inputString):
 			if (ord(inputString[x])+1) == ord(inputString[x+1]):
 				if (ord(inputString[x+1])-1) == ord(inputString[x+2]):		
 					if DEBUG:
-						print "Found Backwards consecutive ASCII"
+						print "Found Backwards incrementing ASCII"
 					return True
 		except:
 			pass
+	return False
+
+
+def checkConsecutiveASCII(inputString):
+
+	#if "abc" in inputString.lower() or "123" in inputString:
+	for x in xrange(len(inputString)):
+		try:
+			if (ord(inputString[x])) == ord(inputString[x+1]):
+				if (ord(inputString[x+1])) == ord(inputString[x+2]):
+					if DEBUG:
+						print "Found Foward consecutive ASCII"
+					return True
+		except:
+			pass
+		
+	return False
+
+def doSymbolsRepeat(inputString):
+	arr = []
+	for i in inputString:
+		if (i.isalnum() == False) and not i in arr:
+			arr.append(i)
+		elif i in arr:
+			return True
+	return False
+
+def containsCommonWords(inputString):
+	arr = []
+	for i in inputString:
+		if (i.isalnum() == False) and not i in arr:
+			arr.append(i)
+		elif i in arr:
+			return True
 	return False

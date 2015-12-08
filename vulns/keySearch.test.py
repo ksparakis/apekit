@@ -4,7 +4,7 @@ from keySearch import *
 
 
 print "Beggining test on keySearch..."
-conn = sqlite3.connect('test.db')
+conn = sqlite3.connect('test2.db')
 c = conn.cursor()
 for row in c.execute('SELECT source_code FROM appvulnerability WHERE vulnerability_id=10'):
 	result = keySearch(row[0])
