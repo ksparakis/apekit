@@ -23,7 +23,7 @@ from vulns.vuln_lib_checker import VulnLibChecker
 from vulns.keySearch import keySearch
 from vulns.httpschecker import httpschecker
 from vulns.commentchecker import commentchecker
-from charting.charting import chart_vulns
+# from charting.charting import chart_vulns
 
 class Pipeline(object):
     """
@@ -63,10 +63,10 @@ class Pipeline(object):
             print "Finished analyzing app " + app.app_id + "for vulns"
 
 
-    def chart_vulns(self):
-        mi = ModelInterface.get_instance()
-        num_apps = mi.get_num_apps()
-        chart_vulns(mi.get_vulnerabilities_and_descriptions(), num_apps)
+    # def chart_vulns(self):
+    #   mi = ModelInterface.get_instance()
+    #   num_apps = mi.get_num_apps()
+    #   chart_vulns(mi.get_vulnerabilities_and_descriptions(), num_apps)
 
 
     @staticmethod

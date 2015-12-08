@@ -78,14 +78,9 @@ def ressemblesKey(inputString):
 def inQuotes(inputString):
 	import re
 	result = re.findall(r'"([^"]*)"', inputString)
-	if result != "":
+	if result:
 		if DEBUG:
 			print "Extracted string = " + result[0] + " from " + inputString
-		return result[0];
-	result = re.findall(r"'(.*?)'", inputString)
-	if result != "":
-		if DEBUG:
-			print "Extracted string = " + str(result)
 		return result[0];
 	if DEBUG:
 		print "Was unable to extract potential string from - "+ str(inputString) 
