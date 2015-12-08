@@ -12,3 +12,11 @@ for row in c.execute('SELECT source_code FROM appvulnerability WHERE vulnerabili
 	        print "Passed Key test:\t" + inQuotes(row[0])
 		#print "line of code:\t" + row[0]
 print "End of test on keySearch..."
+
+
+print ""
+print ""
+print ""
+
+print doesEntryExist("DasdfadsfdEBUG") #should return false
+print doesEntryExist("DEBUG") # Should return true

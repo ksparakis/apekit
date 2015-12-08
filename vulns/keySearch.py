@@ -30,6 +30,11 @@ def ressemblesKey(inputString):
 		unique_upperCase = uniqueUpperCaseCount(extract)
 		unique_lowerCase = uniqueLowerCaseCount(extract)
 
+		#if doesEntryExist(inputString, True):
+		#	if DEBUG:
+		#		print "entry already exists"
+		#	return False
+
 		## Filter out typical file names and websites
 		if "/" in extract: #website detection
 			if DEBUG:
@@ -237,11 +242,13 @@ def doSymbolsRepeat(inputString):
 			return True
 	return False
 
-def containsCommonWords(inputString):
-	arr = []
-	for i in inputString:
-		if (i.isalnum() == False) and not i in arr:
-			arr.append(i)
-		elif i in arr:
-			return True
+def doesEntryExist(inputString, testMode):
+	import sqlite3
+	if testMode:
+		conn = sqlite3.connect('test2.db')
+	else:
+		conn = sqlite3.connect('../apekit.db')
+	c = conn.cursor()
+	for row in c.execute("SELECT source_code FROM appvulnerability WHERE vulnerability_id=10 AND source_code like \'%" +inputString+ "%\'"):
+		return True
 	return False
