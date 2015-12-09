@@ -3,7 +3,14 @@
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Disclaimer
 --------
-We are ethical hackers. The goal of this project was not to exploit vulnerabilities in the Android apps we analyzed but to determine whether unauthorized access or other malicious activities were possible. This software is not intended for use in any unethical, illicit, or malicious way.
+We are **ethical hackers**. The goal of this project was not to exploit vulnerabilities in the Android apps we analyzed but to determine whether unauthorized access or other malicious activities were possible. This software is not intended for use in any unethical, illicit, or malicious way. But if you choose to do so, it is on your own risk and to the penalty of the law >:( 
+
+**In fact we even email people with security vulnerabilities we can't ignore!**
+![email vulnerability](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/helpingCommunity.png)
+
+![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Introduction
+--------
+Apekit is a pipeline of tools and modules put together using python inorder to download large amounts of android apps, decompile them from an APK to Java source code and analyze them for static security vulnerabilities. Apekit was built by students at Boston University, but feel free to contribute and improve!
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Modules
 --------
@@ -104,3 +111,6 @@ We selected CVE Android vulnerabilities that were easy to identify using static 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Copyright and License
 --------
 Copyright 2015. Code released under the [Apache 2.0](./LICENSE) license.
+
+
+**Don't make us go apekit...**
