@@ -2,6 +2,8 @@
 # We just need to pass the array of tuples in the correct manner and it should do the rest just fine
 # Also pass the total number of apps
 
+# Petar Ojdrovic
+
 import matplotlib.pyplot as plt
 
 def chart_vulns(vulns, total_apps):
