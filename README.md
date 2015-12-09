@@ -3,9 +3,9 @@
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Disclaimer
 --------
-We are **ethical hackers**. The goal of this project was not to exploit vulnerabilities in the Android apps we analyzed but to determine whether unauthorized access or other malicious activities were possible. This software is not intended for use in any unethical, illicit, or malicious way. But if you choose to do so, it is on your own risk and to the penalty of the law >:( 
+We are **ethical hackers**. The goal of this project was not to exploit vulnerabilities in the Android apps we analyzed but to determine whether unauthorized access or other malicious activities were possible. This software is not intended for use in any unethical, illicit, or malicious way. If you choose to do so, it is at your own risk and the penalty of the law. >:( 
 
-**In fact we even email people with security vulnerabilities we can't ignore!**
+**In fact, we even notified people about the security vulnerabilities we found:**
 ![email vulnerability](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/helpingCommunity.png)
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Introduction
