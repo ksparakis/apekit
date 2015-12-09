@@ -100,7 +100,7 @@ class ModelInterface(object):
     def does_entry_exist_for_key(input_string):
         count = AppVulnerability.select().where(
             AppVulnerability.vulnerability_id == 10,
-            source_code % input_string).count()
+            input_string % source_code).count()
         if count > 0:
             return True
         return False
