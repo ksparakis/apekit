@@ -10,7 +10,7 @@ We are **ethical hackers**. The goal of this project was not to exploit vulnerab
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Introduction
 --------
-Apekit is a pipeline of tools and modules put together using python inorder to download large amounts of android apps, decompile them from an APK to Java source code and analyze them for static security vulnerabilities. Apekit was built by students at Boston University, but feel free to contribute and improve!
+Apekit is a pipeline of python tools and modules that downloads a large number of Android apps, decompiles them from APK back to Java source code, then performs static analysis on the source code to detected potential security vulnerabilities. Apekit was built by students at Boston University as a final project for EC521 Cyber Security. Feel free to contribute and improve!
 
 ![banana bullet](https://raw.githubusercontent.com/ksparakis/apekit/master/imgs/smallbanana.png) Modules
 --------
