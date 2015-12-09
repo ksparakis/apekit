@@ -3,8 +3,9 @@
 # **Output : False if key does not look like a private key of anykind
 #	     Returns Array[True, Keytype]- keytype will be null if cant specifiy 
 import re
+from backend.model_interface import ModelInterface
+
 DEBUG = False 
-TESTDB = False
 
 def keySearch ( inputString ):
 	if ressemblesKey(inputString):
@@ -79,8 +80,8 @@ def ressemblesKey(inputString):
 				print ""
 			return False
 
-
-		if doesEntryExist(inputString):
+		mi = ModelInterface.get_instance()
+		if mi.does_entry_exist_for_key(inputString):
 			if DEBUG:
 				print "entry already exists"
 			return False
@@ -263,17 +264,4 @@ def doSymbolsRepeat(inputString):
 			arr.append(i)
 		elif i in arr:
 			return True
-	return False
-
-def doesEntryExist(inputString):
-	import sqlite3
-	# If you are using a test db change the mother variable uptop
-	if TESTDB:
-		conn = sqlite3.connect('test2.db')
-	else:
-		conn = sqlite3.connect('../apekit.db')
-	c = conn.cursor()
-	#print inputString
-	for row in c.execute("SELECT source_code FROM appvulnerability WHERE vulnerability_id=10 AND source_code like \'%"+inputString+"%\'"):
-		return True
 	return False
