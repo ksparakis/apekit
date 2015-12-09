@@ -17,6 +17,7 @@
 import fnmatch
 import os
 import subprocess
+from datetime import datetime
 
 from backend.model_interface import ModelInterface
 from vulns.vuln_lib_checker import VulnLibChecker

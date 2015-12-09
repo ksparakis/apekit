@@ -2,6 +2,9 @@
 # **Parameters : inputString- a line of code or a string 
 # **Output : False if key does not look like a private key of anykind
 #	     Returns Array[True, Keytype]- keytype will be null if cant specifiy 
+import re
+from backend.model_interface import ModelInterface
+
 DEBUG = False 
 
 def keySearch ( inputString ):
@@ -30,23 +33,60 @@ def ressemblesKey(inputString):
 		unique_upperCase = uniqueUpperCaseCount(extract)
 		unique_lowerCase = uniqueLowerCaseCount(extract)
 
+
 		## Filter out typical file names and websites
-		if "//" in extract: #website detection
+		if "/" in extract: #website detection
 			if DEBUG:
 				print "Detected web url..."
 			return False
+
+		if "\\" in extract: #website detection
+			if DEBUG:
+				print "Detected seperator"
+			return False
 	
+		if doSymbolsRepeat(extract): 
+			if DEBUG:
+				print "Detected repeating symbols"
+			return False
+
 		extension = checkIfFilename(extract)
 		if extension:
 			if DEBUG:
 				print "Detected filename..." 
-			return False;
+			return False
 
 		
 		if checkConsecutiveASCII(extract):
 			if DEBUG:
 				print "Detected consecutive letters... not random key"
-			return False;
+			return False
+
+		if checkIncrementingASCII(extract):
+			if DEBUG:
+				print "Detected consecutive letters... not random key"
+			return False
+		
+		## THE REGEX ring
+		#Searches for Format word_numbers
+		if re.findall(r'[\w]*_[\d]*', extract):
+			if DEBUG:
+				print ""
+			return 
+
+		#Searches for Format numbers_word
+		if re.findall(r'[\d]*_[\w]*', extract):
+			if DEBUG:
+				print ""
+			return False
+
+		mi = ModelInterface.get_instance()
+		if mi.does_entry_exist_for_key(inputString):
+			if DEBUG:
+				print "entry already exists"
+			return False
+
+
 		#we know that this must at least be a password of some type
 		if numbers == len(extract): 
 			if DEBUG:
@@ -76,7 +116,6 @@ def ressemblesKey(inputString):
 
 
 def inQuotes(inputString):
-	import re
 	result = re.findall(r'"([^"]*)"', inputString)
 	if result:
 		if DEBUG:
@@ -169,13 +208,13 @@ def checkIfFilename(extract):
 			print "location:"+ str(loc)
 			print extract
 			print "length of extension = "+str((len(extract) - loc))
-			print "extension =" + str((len(extract) - loc) < 6)
+			print "extension =" + str((len(extract) - loc) < 8)
 		if (len(extract) - loc) < 6:
 			return True
 
 	return False
 
-def checkConsecutiveASCII(inputString):
+def checkIncrementingASCII(inputString):
 
 	#if "abc" in inputString.lower() or "123" in inputString:
 	for x in xrange(len(inputString)):
@@ -183,7 +222,7 @@ def checkConsecutiveASCII(inputString):
 			if (ord(inputString[x])+1) == ord(inputString[x+1]):
 				if (ord(inputString[x+1])+1) == ord(inputString[x+2]):
 					if DEBUG:
-						print "Found Foward consecutive ASCII"
+						print "Found Foward incrementing ASCII"
 					return True
 		except:
 			pass
@@ -191,8 +230,33 @@ def checkConsecutiveASCII(inputString):
 			if (ord(inputString[x])+1) == ord(inputString[x+1]):
 				if (ord(inputString[x+1])-1) == ord(inputString[x+2]):		
 					if DEBUG:
-						print "Found Backwards consecutive ASCII"
+						print "Found Backwards incrementing ASCII"
 					return True
 		except:
 			pass
+	return False
+
+
+def checkConsecutiveASCII(inputString):
+
+	#if "abc" in inputString.lower() or "123" in inputString:
+	for x in xrange(len(inputString)):
+		try:
+			if (ord(inputString[x])) == ord(inputString[x+1]):
+				if (ord(inputString[x+1])) == ord(inputString[x+2]):
+					if DEBUG:
+						print "Found Foward consecutive ASCII"
+					return True
+		except:
+			pass
+		
+	return False
+
+def doSymbolsRepeat(inputString):
+	arr = []
+	for i in inputString:
+		if (i.isalnum() == False) and not i in arr:
+			arr.append(i)
+		elif i in arr:
+			return True
 	return False
