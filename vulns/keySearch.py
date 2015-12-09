@@ -2,6 +2,7 @@
 # **Parameters : inputString- a line of code or a string 
 # **Output : False if key does not look like a private key of anykind
 #	     Returns Array[True, Keytype]- keytype will be null if cant specifiy 
+import re
 DEBUG = False 
 TESTDB = False
 
@@ -52,25 +53,37 @@ def ressemblesKey(inputString):
 		if extension:
 			if DEBUG:
 				print "Detected filename..." 
-			return False;
+			return False
 
 		
 		if checkConsecutiveASCII(extract):
 			if DEBUG:
 				print "Detected consecutive letters... not random key"
-			return False;
+			return False
 
 		if checkIncrementingASCII(extract):
 			if DEBUG:
 				print "Detected consecutive letters... not random key"
-			return False;
+			return False
 		
+		## THE REGEX ring
+		#Searches for Format word_numbers
+		if re.findall(r'[\w]*_[\d]*', extract):
+			if DEBUG:
+				print ""
+			return 
+
+		#Searches for Format numbers_word
+		if re.findall(r'[\d]*_[\w]*', extract):
+			if DEBUG:
+				print ""
+			return False
+
 
 		if doesEntryExist(inputString):
 			if DEBUG:
 				print "entry already exists"
 			return False
-
 
 
 
@@ -107,7 +120,6 @@ def ressemblesKey(inputString):
 
 
 def inQuotes(inputString):
-	import re
 	result = re.findall(r'"([^"]*)"', inputString)
 	if result:
 		if DEBUG:
