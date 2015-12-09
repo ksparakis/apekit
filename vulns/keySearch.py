@@ -3,6 +3,7 @@
 # **Output : False if key does not look like a private key of anykind
 #	     Returns Array[True, Keytype]- keytype will be null if cant specifiy 
 DEBUG = False 
+TESTDB = False
 
 def keySearch ( inputString ):
 	if ressemblesKey(inputString):
@@ -30,10 +31,6 @@ def ressemblesKey(inputString):
 		unique_upperCase = uniqueUpperCaseCount(extract)
 		unique_lowerCase = uniqueLowerCaseCount(extract)
 
-		#if doesEntryExist(inputString, True):
-		#	if DEBUG:
-		#		print "entry already exists"
-		#	return False
 
 		## Filter out typical file names and websites
 		if "/" in extract: #website detection
@@ -67,6 +64,20 @@ def ressemblesKey(inputString):
 			if DEBUG:
 				print "Detected consecutive letters... not random key"
 			return False;
+		
+
+		if doesEntryExist(inputString):
+			if DEBUG:
+				print "entry already exists"
+			return False
+
+
+
+
+
+
+
+
 		#we know that this must at least be a password of some type
 		if numbers == len(extract): 
 			if DEBUG:
@@ -242,13 +253,15 @@ def doSymbolsRepeat(inputString):
 			return True
 	return False
 
-def doesEntryExist(inputString, testMode):
+def doesEntryExist(inputString):
 	import sqlite3
-	if testMode:
+	# If you are using a test db change the mother variable uptop
+	if TESTDB:
 		conn = sqlite3.connect('test2.db')
 	else:
 		conn = sqlite3.connect('../apekit.db')
 	c = conn.cursor()
-	for row in c.execute("SELECT source_code FROM appvulnerability WHERE vulnerability_id=10 AND source_code like \'%" +inputString+ "%\'"):
+	#print inputString
+	for row in c.execute("SELECT source_code FROM appvulnerability WHERE vulnerability_id=10 AND source_code like \'%"+inputString+"%\'"):
 		return True
 	return False

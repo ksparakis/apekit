@@ -14,9 +14,6 @@ for row in c.execute('SELECT source_code FROM appvulnerability WHERE vulnerabili
 print "End of test on keySearch..."
 
 
-print ""
-print ""
-print ""
-
+print "DOES entry exist test"
 print doesEntryExist("DasdfadsfdEBUG") #should return false
 print doesEntryExist("DEBUG") # Should return true
