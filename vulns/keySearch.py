@@ -87,11 +87,6 @@ def ressemblesKey(inputString):
 			return False
 
 
-
-
-
-
-
 		#we know that this must at least be a password of some type
 		if numbers == len(extract): 
 			if DEBUG:
